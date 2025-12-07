@@ -1,27 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>Inci's kedushis (Dev)</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <head>
+    <meta charset="UTF-8" />
+    <title>Inci's kedushis</title>
+    <!-- Link to external CSS file -->
+    <link rel="stylesheet" href="style.css" />
+    <!-- Favicon -->
+    <link rel="icon" href="public/assets/maincat.png" />
+    <!-- React and ReactDOM (Development versions) -->
+    <script
+      src="https://unpkg.com/react@18/umd/react.development.js"
+      crossorigin
+    ></script>
+    <script
+      src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"
+      crossorigin
+    ></script>
 
-  <link rel="stylesheet" href="style.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&family=Playfair+Display:wght@600&family=Press+Start+2P&display=swap" rel="stylesheet" />
-</head>
-<body>
-  <div id="root"></div>
+    <!-- Babel Standalone to compile JSX -->
+    <script
+      src="https://unpkg.com/@babel/standalone/babel.min.js"
+      crossorigin
+    ></script>
+  </head>
 
-  <!-- React (Dev builds) -->
-  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <body>
+    <div id="root"></div>
 
-  <!-- Confetti library -->
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
-
-  <!-- Babel Standalone (transpiles JSX in-browser) -->
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-
-  <!-- Game code (JSX source, will be compiled by Babel) -->
-  <script type="text/babel" src="game.jsx" data-presets="react"></script>
-</body>
+    <!-- Your React App -->
+    <script type="text/babel" src="game.jsx"></script>
+  </body>
 </html>
