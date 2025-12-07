@@ -1,20 +1,5 @@
-/******************************************************
- * Inci's kedushi's – cozy birthday clicker
- * NO external Motion lib needed.
- * - Custom "motion" wrappers with hover/tap animations
- * - Birthday popup + music
- * - Upgrades, companions, rebirth, gallery
- * - Pixel mode
- * - Save / load via localStorage
- ******************************************************/
 
 const { useState, useEffect, useRef } = React;
-
-/* ----------------------------------------------------
-   Tiny Motion Wrapper (no library)
-   lets us use <motion.div whileHover whileTap ... />
----------------------------------------------------- */
-
 function createMotionComponent(tag) {
   return function MotionComponent(props) {
     const {
@@ -22,7 +7,7 @@ function createMotionComponent(tag) {
       whileTap,
       initial,
       animate,
-      transition, // not used, but accepted
+      transition, 
       style,
       onMouseEnter,
       onMouseLeave,
@@ -138,92 +123,31 @@ function computePotentialHearts(bestRun) {
   return Math.max(0, Math.floor(val));
 }
 
+// Show birthday popup once per browser tab session
+function getInitialPopupState() {
+  try {
+
+    return !sessionStorage.getItem("birthdayPopupSeen");
+  } catch {
+
+    return true;
+  }
+}
+
 /* ----------------------------------------------------
    Upgrades
 ---------------------------------------------------- */
 
 const UPGRADE_DEFS = [
-  {
-    id: "softPaws",
-    name: "Soft Paws",
-    desc: "+0.50 pets per click",
-    type: "addClick",
-    value: 0.5,
-    baseCost: 15,
-    growth: 1.35,
-  },
-  {
-    id: "sleepushi",
-    name: "Sleepushi",
-    desc: "+2.0 pets per click",
-    type: "addClick",
-    value: 2,
-    baseCost: 80,
-    growth: 1.45,
-  },
-  {
-    id: "blanket",
-    name: "Supa Cozy Blanket",
-    desc: "+25% per-click pets",
-    type: "multClick",
-    value: 0.25,
-    baseCost: 150,
-    growth: 1.55,
-  },
-  {
-    id: "sunbeam",
-    name: "Sunny Window",
-    desc: "+0.5 pets per second",
-    type: "addPassive",
-    value: 0.5,
-    baseCost: 20,
-    growth: 1.3,
-  },
-  {
-    id: "autoPetter",
-    name: "Auto Petter",
-    desc: "+2.0 pets per second",
-    type: "addPassive",
-    value: 2,
-    baseCost: 120,
-    growth: 1.5,
-  },
-  {
-    id: "catCafe",
-    name: "Cat Café",
-    desc: "+6.0 pets per second",
-    type: "addPassive",
-    value: 6,
-    baseCost: 400,
-    growth: 1.6,
-  },
-  {
-    id: "influencer",
-    name: "Little Princessushi",
-    desc: "+25% passive pets",
-    type: "multPassive",
-    value: 0.25,
-    baseCost: 600,
-    growth: 1.7,
-  },
-  {
-    id: "treatBag",
-    name: "Food Stealer",
-    desc: "+20% to ALL pets",
-    type: "multGlobal",
-    value: 0.2,
-    baseCost: 900,
-    growth: 1.75,
-  },
-  {
-    id: "throne",
-    name: "Thronushi",
-    desc: "+35% to ALL pets",
-    type: "multGlobal",
-    value: 0.35,
-    baseCost: 2000,
-    growth: 1.9,
-  },
+  { id: "softPaws",    name: "Soft Paws",        desc: "+0.50 pets per click",   type: "addClick",  value: 0.5, baseCost: 15,  growth: 1.35 },
+  { id: "sleepushi",   name: "Sleepushi",       desc: "+2.0 pets per click",    type: "addClick",  value: 2,   baseCost: 80,  growth: 1.45 },
+  { id: "blanket",     name: "Supa Cozy Blanket", desc: "+25% per-click pets", type: "multClick", value: 0.25, baseCost: 150, growth: 1.55 },
+  { id: "sunbeam",     name: "Sunny Window",    desc: "+0.5 pets per second",   type: "addPassive", value: 0.5, baseCost: 20,  growth: 1.3 },
+  { id: "autoPetter",  name: "Auto Petter",     desc: "+2.0 pets per second",   type: "addPassive", value: 2,   baseCost: 120, growth: 1.5 },
+  { id: "catCafe",     name: "Cat Café",        desc: "+6.0 pets per second",   type: "addPassive", value: 6,   baseCost: 400, growth: 1.6 },
+  { id: "influencer",  name: "Little Princessushi", desc: "+25% passive pets", type: "multPassive", value: 0.25, baseCost: 600, growth: 1.7 },
+  { id: "treatBag",    name: "Food Stealer",    desc: "+20% to ALL pets",       type: "multGlobal", value: 0.2, baseCost: 900, growth: 1.75 },
+  { id: "throne",      name: "Thronushi",       desc: "+35% to ALL pets",       type: "multGlobal", value: 0.35, baseCost: 2000, growth: 1.9 },
 ];
 
 function getUpgradeCost(def, level) {
@@ -238,20 +162,21 @@ function BirthdayPopup({ onClose, playBirthday, popupSound }) {
   const handleStart = () => {
     popupSound();
     playBirthday();
+    try {
+      sessionStorage.setItem("birthdayPopupSeen", "1");
+    } catch {
+      // ignore if sessionStorage not available
+    }
     onClose();
   };
 
+
   return (
     <motion.div className="overlay" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-      <motion.div
-        className="popup-card"
-        initial={{ scale: 0.92, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-      >
+      <motion.div className="popup-card" initial={{ scale: 0.92, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}>
         <h2>Happy birthday my love 💗</h2>
         <p>
-          I made this cozy cat garden just for you, kedushi. Thank you for being
-          in my life.
+          I made this cozy cat garden just for you, kedushi. Thank you for being in my life.
         </p>
         <button className="popup-btn" onClick={handleStart}>
           Start playing ✨
@@ -265,35 +190,19 @@ function EndingPopup({ onClose }) {
   useEffect(() => {
     if (typeof confetti === "function") {
       const colors = ["#ffd6a5", "#ffb3da", "#f3dde2", "#e8b2c0", "#ffffff"];
-      confetti({
-        particleCount: 80,
-        spread: 60,
-        origin: { x: 0.1, y: 1 },
-        colors,
-      });
-      confetti({
-        particleCount: 80,
-        spread: 60,
-        origin: { x: 0.9, y: 1 },
-        colors,
-      });
+      confetti({ particleCount: 80, spread: 60, origin: { x: 0.1, y: 1 }, colors });
+      confetti({ particleCount: 80, spread: 60, origin: { x: 0.9, y: 1 }, colors });
     }
   }, []);
 
   return (
     <motion.div className="overlay" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-      <motion.div
-        className="popup-card"
-        initial={{ scale: 0.92, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-      >
+      <motion.div className="popup-card" initial={{ scale: 0.92, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}>
         <div className="ending-sparkles" />
-        <img src="maincat.png" alt="Birthday cat" className="cake-illu" />
+        <img src="./public/assets/maincat.png" alt="Birthday cat" className="cake-illu" />
         <h2 className="fancy-font">Happy Birthday Incushi 🎂</h2>
         <p>
-          You pet Zeze and BMO so much that the whole garden turned into a
-          perfect birthday universe. No matter how many runs reset, I keep
-          choosing you.
+          You pet Zeze and BMO so much that the whole garden turned into a perfect birthday universe. No matter how many runs reset, I keep choosing you.
         </p>
         <button className="popup-btn" onClick={onClose}>
           Keep playing with the babies 🐾
@@ -328,7 +237,7 @@ function PetArea({ petsPerClick, onPet, petSound }) {
   return (
     <motion.div className="main-area" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
       <motion.img
-        src="maincat.png"
+        src="./public/assets/maincat.png"
         alt="Cat"
         className="main-cat"
         onClick={handlePet}
@@ -355,17 +264,10 @@ function PetArea({ petsPerClick, onPet, petSound }) {
 
 function CompanionsRow({ zezeUnlocked, bmoUnlocked }) {
   return (
-    <motion.div
-      className="companions-row"
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-    >
-      <motion.div
-        className="companion-card"
-        whileHover={{ transform: "translateY(-3px) scale(1.01)" }}
-      >
+    <motion.div className="companions-row" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+      <motion.div className="companion-card" whileHover={{ transform: "translateY(-3px) scale(1.01)" }}>
         <img
-          src="zeze1.jpg"
+          src="./public/assets/zeze1.jpg"
           alt="Zeze"
           onError={(e) => (e.target.style.display = "none")}
         />
@@ -380,12 +282,9 @@ function CompanionsRow({ zezeUnlocked, bmoUnlocked }) {
         </div>
       </motion.div>
 
-      <motion.div
-        className="companion-card"
-        whileHover={{ transform: "translateY(-3px) scale(1.01)" }}
-      >
+      <motion.div className="companion-card" whileHover={{ transform: "translateY(-3px) scale(1.01)" }}>
         <img
-          src="bmo2.jpg"
+          src="./public/assets/bmo2.jpg"
           alt="BMO"
           onError={(e) => (e.target.style.display = "none")}
         />
@@ -452,11 +351,7 @@ function UpgradesPanel({
   }
 
   return (
-    <motion.div
-      className="panel panel-upgrades"
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-    >
+    <motion.div className="panel panel-upgrades" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
       <h2 className="panel-title">Upgrades</h2>
       <div className="upgrade-grid">
         {UPGRADE_DEFS.map((def, i) => {
@@ -479,12 +374,8 @@ function UpgradesPanel({
                 className="buy"
                 disabled={!affordable}
                 onClick={() => buyUpgrade(i)}
-                whileHover={
-                  affordable ? { transform: "scale(1.08)" } : undefined
-                }
-                whileTap={
-                  affordable ? { transform: "scale(0.95)" } : undefined
-                }
+                whileHover={affordable ? { transform: "scale(1.08)" } : undefined}
+                whileTap={affordable ? { transform: "scale(0.95)" } : undefined}
               >
                 {formatPets(cost)}
               </motion.button>
@@ -543,11 +434,7 @@ function RebirthPanel({
   }
 
   return (
-    <motion.div
-      className="panel"
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-    >
+    <motion.div className="panel" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
       <h2 className="panel-title">Dreamy rebirth</h2>
       <p>
         Hearts: {hearts} (each gives +5% to all pets). Rebirths: {rebirths}.
@@ -555,9 +442,7 @@ function RebirthPanel({
       <p>
         Best run: {formatPets(bestPetsRun)} pets.{" "}
         {gain > 0
-          ? `You can gain +${gain} more heart${
-              gain > 1 ? "s" : ""
-            } if you rebirth now.`
+          ? `You can gain +${gain} more heart${gain > 1 ? "s" : ""} if you rebirth now.`
           : "Earn more pets to unlock new hearts."}
       </p>
       <button className="buy" disabled={gain <= 0} onClick={handleRebirth}>
@@ -568,13 +453,15 @@ function RebirthPanel({
 }
 
 function GalleryPanel() {
-  const imgs = ["zeze1.jpg", "zeze2.jpg", "bmo2.jpg", "bmo3.jpg"];
+  const imgs = [
+    "./public/assets/zeze1.jpg",
+    "./public/assets/zeze2.jpg",
+    "./public/assets/zeze3.jpg",
+    "./public/assets/bmo2.jpg",
+    "./public/assets/bmo3.jpg",
+  ];
   return (
-    <motion.div
-      className="panel panel-gallery"
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-    >
+    <motion.div className="panel panel-gallery" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
       <h2 className="panel-title">Cat moments ✨</h2>
       <div className="gallery">
         {imgs.map((src) => (
@@ -607,20 +494,19 @@ function App() {
   const [zezeUnlocked, setZezeUnlocked] = useState(false);
   const [bmoUnlocked, setBmoUnlocked] = useState(false);
 
-  const [upgradeLevels, setUpgradeLevels] = useState(
-    Array(UPGRADE_DEFS.length).fill(0)
-  );
+  const [upgradeLevels, setUpgradeLevels] = useState(Array(UPGRADE_DEFS.length).fill(0));
 
-  const [pixelMode, setPixelMode] = useState(false);
-  const [showBirthdayPopup, setShowBirthdayPopup] = useState(true);
-  const [showEndingPopup, setShowEndingPopup] = useState(false);
+ const [pixelMode, setPixelMode] = useState(false);
+const [showBirthdayPopup, setShowBirthdayPopup] = useState(() => getInitialPopupState());
+const [showEndingPopup, setShowEndingPopup] = useState(false);
+
 
   /* sounds */
-  const clickSfx = useSound("click.mp3", 0.6);
-  const upgradeSfx = useSound("upgrade.mp3", 0.7);
-  const rebirthSfx = useSound("rebirth.mp3", 0.7);
-  const popupSfx = useSound("popup.mp3", 0.7);
-  const birthdayMusic = useSound("birthday.mp3", 0.6, { loop: false });
+  const clickSfx = useSound("./public/assets/click.mp3", 0.6);
+  const upgradeSfx = useSound("./public/assets/upgrade.mp3", 0.7);
+  const rebirthSfx = useSound("./public/assets/rebirth.mp3", 0.7);
+  const popupSfx = useSound("./public/assets/popup.mp3", 0.7);
+  const birthdayMusic = useSound("./public/assets/birthday.mp3", 0.6, { loop: false });
 
   /* load once */
   useEffect(() => {
@@ -645,11 +531,11 @@ function App() {
       }
       if (typeof data.pixelMode === "boolean") setPixelMode(data.pixelMode);
     } catch (e) {
-      // ignore
+      // ignore corrupted save
     }
   }, []);
 
-  /* save */
+  /* save on change */
   useEffect(() => {
     const save = {
       totalPets,
@@ -677,7 +563,7 @@ function App() {
     pixelMode,
   ]);
 
-  /* passive income */
+  /* passive income loop (adds petsPerSecond/10 every 100ms) */
   useEffect(() => {
     const id = setInterval(() => {
       if (petsPerSecond <= 0) return;
@@ -690,7 +576,7 @@ function App() {
     return () => clearInterval(id);
   }, [petsPerSecond]);
 
-  /* unlock companions */
+  /* unlock companions when reaching thresholds */
   useEffect(() => {
     if (!zezeUnlocked && bestPetsRun >= 2000) {
       setZezeUnlocked(true);
@@ -702,25 +588,30 @@ function App() {
     }
   }, [bestPetsRun, zezeUnlocked, bmoUnlocked]);
 
-  /* ending popup trigger */
+  /* show ending popup after certain milestones */
   useEffect(() => {
     if (hearts >= 5 || bestPetsRun >= 200000) {
       setShowEndingPopup(true);
     }
   }, [hearts, bestPetsRun]);
 
-  /* pixel mode body class */
+  /* pixel mode toggle: add/remove CSS class on body */
   useEffect(() => {
     if (pixelMode) document.body.classList.add("pixel-mode");
     else document.body.classList.remove("pixel-mode");
   }, [pixelMode]);
 
-  /* attempt birthday music on initial load (once) */
-  useEffect(() => {
+  /* play birthday music once on initial load (will only play if not blocked by browser) */
+ useEffect(() => {
+  const unlock = () => {
     birthdayMusic();
-  }, []); // play once on page load
+  };
+  window.addEventListener("click", unlock, { once: true });
+  return () => window.removeEventListener("click", unlock);
+}, []);
 
   function handlePet() {
+    // Unified pet action handler for manual clicks (adds petsPerClick)
     setTotalPets((p) => {
       const next = p + petsPerClick;
       setBestPetsRun((b) => (next > b ? next : b));
@@ -729,18 +620,11 @@ function App() {
   }
 
   return (
-    <motion.div
-      className="page"
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-    >
+    <motion.div className="page" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}>
+      {/* Title and Pixel Mode toggle */}
       <div className="title-row">
         <h1 className="title">Inci's kedushis 🐾💗</h1>
-        <motion.label
-          className="mode-toggle"
-          whileHover={{ transform: "scale(1.05)" }}
-          whileTap={{ transform: "scale(0.96)" }}
-        >
+        <motion.label className="mode-toggle" whileHover={{ transform: "scale(1.05)" }} whileTap={{ transform: "scale(0.96)" }}>
           <input
             type="checkbox"
             checked={pixelMode}
@@ -750,6 +634,7 @@ function App() {
         </motion.label>
       </div>
 
+      {/* Stats display */}
       <div className="stats-row">
         <div className="stat">
           <span>{formatPets(totalPets)}</span>
@@ -772,17 +657,13 @@ function App() {
         Hearts give +5% to all pets each run ✨
       </div>
 
-      <PetArea
-        petsPerClick={petsPerClick}
-        onPet={handlePet}
-        petSound={clickSfx}
-      />
+      {/* Main interactive area (cat image + pet button) */}
+      <PetArea petsPerClick={petsPerClick} onPet={handlePet} petSound={clickSfx} />
 
-      <CompanionsRow
-        zezeUnlocked={zezeUnlocked}
-        bmoUnlocked={bmoUnlocked}
-      />
+      {/* Companions (visible once unlocked) */}
+      <CompanionsRow zezeUnlocked={zezeUnlocked} bmoUnlocked={bmoUnlocked} />
 
+      {/* Upgrades shop panel */}
       <UpgradesPanel
         totalPets={totalPets}
         setTotalPets={setTotalPets}
@@ -795,6 +676,7 @@ function App() {
         upgradeSound={upgradeSfx}
       />
 
+      {/* Rebirth panel */}
       <RebirthPanel
         hearts={hearts}
         rebirths={rebirths}
@@ -811,8 +693,10 @@ function App() {
         rebirthSound={rebirthSfx}
       />
 
+      {/* Photo gallery panel */}
       <GalleryPanel />
 
+      {/* Popups (birthday start and ending) */}
       <AnimatePresence>
         {showBirthdayPopup && (
           <BirthdayPopup
@@ -829,9 +713,7 @@ function App() {
   );
 }
 
-/* ----------------------------------------------------
-   Mount
----------------------------------------------------- */
+
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(<App />);
