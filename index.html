@@ -3,17 +3,34 @@
   <head>
     <meta charset="UTF-8" />
     <title>Inci's kedushis</title>
+
+    <!-- Important for mobile! -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
     <link rel="stylesheet" href="style.css" />
     <link rel="icon" href="public/assets/maincat.png" />
-    <!-- Dev only: Babel + React -->
+
+    <!-- Fonts like in dev file -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&family=Playfair+Display:wght@600&family=Press+Start+2P&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- React (Dev builds) -->
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+
+    <!-- Confetti (you used this in dev) -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+
+    <!-- Babel Standalone -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   </head>
   <body>
     <div id="root"></div>
 
-    <!-- Dev only: JSX script -->
-    <script type="text/babel" src="game.jsx"></script>
+    <!-- Game code (JSX source, compiled by Babel in-browser) -->
+    <!-- data-presets="react" is important so JSX compiles correctly -->
+    <script type="text/babel" src="game.jsx" data-presets="react"></script>
   </body>
 </html>
